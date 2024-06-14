@@ -2,20 +2,27 @@
   "name": "electron-test",
   "version": "0.1.0",
   "private": true,
+  "main": "public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:prod": "react-scripts build",
+    "electron": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "pack:mac:prod": "node build.js prod mac",
+    "pack:win:prod": "node build.js prod win"
   },
   "eslintConfig": {
     "extends": [
@@ -34,5 +41,56 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^31.0.1",
+    "electron-builder": "^24.13.3",
+    "env-cmd": "^10.1.0",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "productName": "Test app",
+    "appId": "com.test.voizworks",
+    "files": [
+      "build/**/*",
+      "public/**/*",
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "public"
+    },
+    "mac": {
+      "category": "utils",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Please give us access to your microphone",
+        "NSCameraUsageDescription": "Please give us access to your camera",
+        "com.apple.security.device.audio-input": true,
+        "com.apple.security.device.camera": true
+      },
+      "icon": "public/icon.icns"
+    },
+    "win": {
+      "icon": "public/icon.ico",
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
+    },
+    "nsis": {
+      "oneClick": true,
+      "installerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "deleteAppDataOnUninstall": true
+    }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "author": "VOIZWORKS",
+  "license": "ISC"
 }
